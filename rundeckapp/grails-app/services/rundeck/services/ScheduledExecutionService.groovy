@@ -3639,7 +3639,7 @@ class ScheduledExecutionService implements ApplicationContextAware, Initializing
             return [success: false, scheduledExecution: scheduledExecution]
         }
 
-        callbackAfterPersist(importedJob, authContext)
+        rundeckJobDefinitionManager.waspersisted(importedJob, authContext)
 
         def stats = ScheduledExecutionStats.findAllBySe(scheduledExecution)
         if (!stats) {
@@ -3744,7 +3744,7 @@ class ScheduledExecutionService implements ApplicationContextAware, Initializing
             return [success: false, scheduledExecution: scheduledExecution]
         }
 
-        callbackAfterPersist(importedJob, authContext)
+        rundeckJobDefinitionManager.waspersisted(importedJob, authContext)
 
         def stats = ScheduledExecutionStats.findAllBySe(scheduledExecution)
         if (!stats) {
@@ -4278,19 +4278,6 @@ class ScheduledExecutionService implements ApplicationContextAware, Initializing
         return [success: true]
     }
 
-    def callbackAfterPersist(
-            ImportedJob<ScheduledExecution> importedJob,
-            UserAndRolesAuthContext authContext
-    ) {
-        try {
-            rundeckJobDefinitionManager.waspersisted(importedJob, authContext)
-        } catch (Throwable err) {
-            log.debug("Job Component persist error: " + err.message, exception)
-            log.warn("Job Component  persist error: " + err.message)
-            return [success: false, error: err.message]
-        }
-        return [success: true]
-    }
 
     def runBeforeSave(ScheduledExecution scheduledExecution, UserAndRolesAuthContext authContext) {
         INodeSet nodeSet = getNodes(scheduledExecution, null, authContext)
